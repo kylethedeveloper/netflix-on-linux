@@ -1,0 +1,4 @@
+#!/bin/bash
+firefox -p netflixonlinux -no-remote &
+sleep 3
+xdotool key "F11"

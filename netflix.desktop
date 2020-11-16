@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Netflix
+Exec=/opt/netflix-on-linux/netflix
+Comment=Netflix that opens in Firefox and in fullscreen
+Terminal=false
+Icon=/opt/netflix-on-linux/netflix.png
+Type=Application

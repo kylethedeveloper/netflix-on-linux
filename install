@@ -1,0 +1,76 @@
+#!/bin/bash
+
+clear
+echo -E " _   _      _    __ _ _                      _     _                   "
+echo -E "| \ | | ___| |_ / _| (_)_  __   ___  _ __   | |   (_)_ __  _   ___  __ "
+echo -E "|  \| |/ _ \ __| |_| | \ \/ /  / _ \| '_ \  | |   | | '_ \| | | \ \/ / "
+echo -E "| |\  |  __/ |_|  _| | |>  <  | (_) | | | | | |___| | | | | |_| |>  <  "
+echo -E "|_| \_|\___|\__|_| |_|_/_/\_\  \___/|_| |_| |_____|_|_| |_|\__,_/_/\_\ "
+
+echo -e "\n  This is the installation script. Requirements:"
+echo -e "    - Run as sudo"
+echo -e "    - Firefox"
+echo -e "    - GNOME Desktop Environment"
+echo -e "\n  This script does the following:"
+echo -e "    1. Create a new Firefox profile called 'netflixonlinux'"
+echo -e "    2. Copy the profile properties that I prepared to the newly created profile."
+echo -e "    3. Run 'netflixonlinux' profile for a moment to initialize the profile and close afterwards."
+echo -e "    4. Copy the 'netflix.desktop' file to the /usr/share/applications directory."
+echo -e "    5. Restart GNOME Shell (equivalent to Alt+F2+'r'+Enter)\n"
+
+while true; do
+  read -p "Do you want to continue with the installation? [y/N]: " proceed
+  case $proceed in
+    [Yy]* ) break;;
+    [Nn]* ) echo "Exiting..."; exit;;
+    * ) echo "Type y or n only."; exit;;
+  esac
+done
+
+echo -e "\n  Checking requirements..."
+if [ `id -u` -eq 0 ]; then echo "    [✔] Run as sudo"; realUser=$SUDO_USER; else echo -e "    [x] Run as sudo\n\nYou should run this script as sudo. Aborting...\n"; exit 1; fi
+# ↑↑↑ Ref: https://askubuntu.com/a/970898/1147789 ↑↑↑
+which firefox &>/dev/null
+if [ $? -eq 0 ]; then echo "    [✔] Firefox"; else echo -e "    [x] Firefox\n\nFirefox not installed. Aborting...\n"; exit 1; fi
+ls /usr/bin/*session | grep gnome &>/dev/null
+# ↑↑↑ Ref: https://askubuntu.com/a/281554/1147789 ↑↑↑
+if [ $? -eq 0 ]; then echo "    [✔] GNOME"; else echo -e "    [x] GNOME\n\nDesktop Environment is not GNOME. Aborting...\n"; exit 1; fi
+
+echo -e "\n  1. Creating a new Firefox profile called 'netflixonlinux'..."
+sudo -u $realUser firefox -CreateProfile netflixonlinux
+if [ $? -eq 0 ]; then echo -e "  [✔] Success"; else echo -e "  [x] Fail\n\nAborting...\n"; exit 1; fi
+sleep 0.5
+
+echo -e "  2. Copying the profile properties to the newly created profile..."
+realUserHome=`sudo -u $realUser printenv HOME`
+profileDir=`ls $realUserHome/.mozilla/firefox/ |grep netflixonlinux`
+cp properties/* $realUserHome/.mozilla/firefox/$profileDir
+if [ $? -eq 0 ]; then echo -e "  [✔] Success"; else echo -e "  [x] Fail\n\nAborting...\n"; exit 1; fi
+sleep 0.5
+
+echo -e "  3. Running 'netflixonlinux' profile for a moment to initialize the profile and closing afterwards..."
+timeout 7s sudo -u $realUser firefox -p netflixonlinux -no-remote &>/dev/null # run netflixonlinux for 10 seconds and terminate
+if [ $? -eq 124 ]; then echo -e "  [✔] Success"; else echo -e "  [x] Fail\n\nAborting...\n"; exit 1; fi
+# ↑↑↑ Ref: https://man7.org/linux/man-pages/man1/timeout.1.html ↑↑↑
+
+echo -e "  4. Copying the 'netflix.desktop' file to the /usr/share/applications directory..."
+cp netflix.desktop /usr/share/applications
+if [ $? -eq 0 ]; then echo -e "  [✔] Success"; else echo -e "  [x] Fail\n\nAborting...\n"; exit 1; fi
+sleep 0.5
+
+echo -e "  5. Restarting GNOME Shell..."
+gnomePID=`pgrep -o "gnome-session" -u $realUser` # get PID of gnome-session
+if [[ -n $gnomePID ]]; then DBUS_ADDR=`cat /proc/$gnomePID/environ | grep -z "^DBUS_SESSION_BUS_ADDRESS=" | tr '\0' '\n' | sed -e s/DBUS_SESSION_BUS_ADDRESS=//`; else echo -e "  [x] gnome-session could not found, could not restart GNOME shell. Please manually restart to see Netflix icon in Applications Menu.\n"; exit 1; fi
+if [ $? -eq 0 ]; then true; else echo -e "  [x] Fail. Could not restart GNOME shell. Please manually restart to see Netflix icon in Applications Menu.\n"; exit 1; fi
+# ↑↑↑ Ref: https://askubuntu.com/a/926695/1147789 ↑↑↑
+# ↑↑↑ Ref: https://unix.stackexchange.com/a/324124/245859 ↑↑↑
+sleep 1
+sudo -u $realUser gdbus call --address $DBUS_ADDR --dest org.gnome.Shell --object-path /org/gnome/Shell --method org.gnome.Shell.Eval 'Meta.restart(_("Restarting GNOME Shell…"))' &>/dev/null
+# ↑↑↑ Ref: https://askubuntu.com/a/1258891/1147789 ↑↑↑
+if [ $? -eq 0 ]; then echo -e "  [✔] Success"; else echo -e "  [x] Fail\n\nAborting...\n"; exit 1; fi
+
+echo -e " ____                   _  "
+echo -e "|  _ \  ___  _ __   ___| | "
+echo -e "| | | |/ _ \| '_ \ / _ \ | "
+echo -e "| |_| | (_) | | | |  __/_| "
+echo -e "|____/ \___/|_| |_|\___(_) \n"
