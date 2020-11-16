@@ -36,6 +36,6 @@ sudo ./install
 
 ![*Netflix in Application Menu*](https://a.uguu.se/dwrit.png)
 
-![*When opened*](https://a.uguu.se/meyetr.gif)
+![*When opened*](https://a.uguu.se/fvbgnf.gif)
 
 **Note:** Netflix homepage might not load at the first time you click on the icon, which it is supposed to. So the second time and forever will work.
