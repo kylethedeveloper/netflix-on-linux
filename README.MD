@@ -1,6 +1,6 @@
 # Netflix on Linux :clapper:
 
-This is a project that creates an independent Netflix profile on your Firefox browser and makes it *almost* look like a Netflix app. So, this is **not** an app. 
+This is a project that creates an independent Netflix profile on your Firefox browser and makes it *almost* look like a Netflix app. So, this is **not** an app.
 
 > Also check out my [Prime on Linux](https://github.com/kylethedeveloper/prime-on-linux) project.
 
@@ -36,7 +36,7 @@ sudo ./install
 
 ## TODO
 
-- [ ] Make `user.js` more privacy friendly.
+- [x] Make `user.js` more privacy friendly.
 - [ ] Prepare an uninstall script:
 1. Delete `/usr/share/applications/netflix.desktop` file.
 2. Open up Firefox Profile Manager with `firefox -ProfileManager` command for user to delete **netflixonlinux** profile.
