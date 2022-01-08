@@ -59,12 +59,8 @@ sudo ./uninstall
 ## TODO
 
 - [x] Make `user.js` more privacy friendly.
-- [x] Prepare an uninstall script:
-1. Delete `/usr/share/applications/netflix.desktop` file.
-2. Open up Firefox Profile Manager with `firefox -ProfileManager` command for user to delete **netflixonlinux** profile.
-3. Delete `/opt/netflix-on-linux` directory.
-
-- [ ] Add xdotool to requirements
+- [x] Prepare an uninstall script.
+- [x] Add xdotool to requirements.
 
 ***
 
