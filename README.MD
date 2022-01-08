@@ -15,6 +15,7 @@ To be able to use this on your Linux machine, requirements are:
 - sudo privilege
 - Firefox Browser
 - GNOME Desktop Environment
+- xdotool
 
 ## Installation
 
@@ -34,13 +35,36 @@ sudo ./install
 4. Copy the [netflix.desktop](./netflix.desktop) file to the **/usr/share/applications** directory.
 5. Restart GNOME Shell. (equivalent to Alt+F2+'r'+Enter)
 
+## Uninstall
+
+To uninstall netflix-on-linux from your system, go to application directory and run `uninstall` script.
+
+```shell
+cd /opt/netflix-on-linux
+sudo ./uninstall
+```
+
+### Uninstall script steps
+
+`uninstall` script does the following. Examine before running and use at your own risk :warning:
+
+1. Open up Firefox Profile Manager for user to delete **netflixonlinux** profile. At this step, do the following to properly uninstall Firefox profile. This must be done by hand as there is no command for it.
+   - Choose **netflixonlinux** from the list.
+   - Click **Delete Profile**.
+   - Click **Delete Files** to remove all files associated with the profile.
+   - Exit.
+2. Delete files in `/opt/netflix-on-linux` directory *(except uninstall script)*. If desired, directory must be deleted manually. To do so, run `sudo rm -rvf /opt/netflix-on-linux`.
+3. Delete `/usr/share/applications/netflix.desktop` file.
+
 ## TODO
 
 - [x] Make `user.js` more privacy friendly.
-- [ ] Prepare an uninstall script:
+- [x] Prepare an uninstall script:
 1. Delete `/usr/share/applications/netflix.desktop` file.
 2. Open up Firefox Profile Manager with `firefox -ProfileManager` command for user to delete **netflixonlinux** profile.
 3. Delete `/opt/netflix-on-linux` directory.
+
+- [ ] Add xdotool to requirements
 
 ***
 

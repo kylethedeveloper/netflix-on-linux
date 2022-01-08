@@ -1,0 +1,61 @@
+#!/bin/bash
+
+clear
+echo -E " _   _      _    __ _ _                      _     _                   "
+echo -E "| \ | | ___| |_ / _| (_)_  __   ___  _ __   | |   (_)_ __  _   ___  __ "
+echo -E "|  \| |/ _ \ __| |_| | \ \/ /  / _ \| '_ \  | |   | | '_ \| | | \ \/ / "
+echo -E "| |\  |  __/ |_|  _| | |>  <  | (_) | | | | | |___| | | | | |_| |>  <  "
+echo -E "|_| \_|\___|\__|_| |_|_/_/\_\  \___/|_| |_| |_____|_|_| |_|\__,_/_/\_\ "
+
+echo -e "\n  This is the uninstall script. Requirements:"
+echo -e "    - Run as sudo"
+echo -e "    - Firefox"
+echo -e "    - GNOME Desktop Environment"
+echo -e "\n  This script does the following:"
+echo -e "    1. Open up Firefox Profile Manager for user to delete netflixonlinux profile."
+echo -e "    2. Delete files in /opt/netflix-on-linux directory (except uninstall script)."
+echo -e "    3. Delete /usr/share/applications/netflix.desktop file.\n"
+
+while true; do
+  read -p "Do you want to uninstall Netflix on Linux completely? [y/N]: " proceed
+  case $proceed in
+    [Yy]* ) break;;
+    [Nn]* ) echo "Exiting..."; exit;;
+    * ) echo "Type y or n only."; exit;;
+  esac
+done
+
+echo -e "\n  Checking requirements..."
+if [ `id -u` -eq 0 ]; then echo "    [✔] Run as sudo"; realUser=$SUDO_USER; else echo -e "    [x] Run as sudo\n\nYou should run this script as sudo. Aborting...\n"; exit 1; fi
+# ↑↑↑ Ref: https://askubuntu.com/a/970898/1147789 ↑↑↑
+which firefox &>/dev/null
+if [ $? -eq 0 ]; then echo "    [✔] Firefox"; else echo -e "    [x] Firefox\n\nFirefox not installed. Aborting...\n"; exit 1; fi
+ls /usr/bin/*session | grep gnome &>/dev/null
+# ↑↑↑ Ref: https://askubuntu.com/a/281554/1147789 ↑↑↑
+if [ $? -eq 0 ]; then echo "    [✔] GNOME"; else echo -e "    [x] GNOME\n\nDesktop Environment is not GNOME. Aborting...\n"; exit 1; fi
+
+echo -e "\n  1. Opening Firefox Profile Manager..."
+echo -e "\t PLEASE DO THE FOLLOWING CAREFULLY TO COMPLETELY REMOVE FIREFOX PROFILE!!!"
+echo -e "\t - Choose 'netflixonlinux'\n\t - Click 'Delete Profile'\n\t - Click 'Delete Files' to remove all files associated with the profile.\n\t - Exit"
+sudo -u $realUser firefox --ProfileManager &>/dev/null
+if [ $? -eq 0 ]; then echo -e "  [✔] Success\n"; else echo -e "  [x] Fail\n\nAborting...\n"; exit 1; fi
+sleep 0.5
+
+echo -e "  2. Deleting files in /opt/netflix-on-linux directory except this uninstall script..."
+echo -e "\t If desired, directory must be deleted manually. (sudo rm -rvf /opt/netflix-on-linux)"
+currentFileName=(`basename "$0"`)
+optDir="/opt/netflix-on-linux/*"
+find $optDir -not -name "$currentFileName" -print -delete
+if [ $? -eq 0 ]; then echo -e "  [✔] Success\n"; else echo -e "  [x] Fail\n\nAborting...\n"; exit 1; fi
+sleep 0.5
+
+echo -e "  3. Deleting /usr/share/applications/netflix.desktop file..."
+desktopFile="/usr/share/applications/netflix.desktop"
+rm -vf ${desktopFile}
+if [ $? -eq 0 ]; then echo -e "  [✔] Success\n"; else echo -e "  [x] Fail\n\nAborting...\n"; exit 1; fi
+
+echo -e " ____                   _  "
+echo -e "|  _ \  ___  _ __   ___| | "
+echo -e "| | | |/ _ \| '_ \ / _ \ | "
+echo -e "| |_| | (_) | | | |  __/_| "
+echo -e "|____/ \___/|_| |_|\___(_) \n"
